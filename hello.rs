@@ -1,5 +1,29 @@
 //comment
 
+//uncomment to avoid dead code warnings
+#[allow(dead_code)]
+#[derive(Debug)]
+struct DebugPrintable(i32);
+
+#[allow(dead_code)]
+#[derive(Debug)]
+struct UnPrintable(i32);
+
+#[allow(dead_code)]
+#[derive(Debug)]
+struct Structure(i32);
+
+#[allow(dead_code)]
+#[derive(Debug)]
+struct Deep(Structure);
+
+#[allow(dead_code)]
+#[derive(Debug)]
+struct Person<'a> {
+    name: &'a str,
+    age: u8
+}
+
 fn main() {
   //1.
   //ln add newline
@@ -50,4 +74,18 @@ fn main() {
   let pi = 3.141592;
   print!("pi is approx {pi:.0}\n");
   println!("pi is approx {pi:.3}");
+
+  println!("Now {:?} will print!", DebugPrintable(38));
+  println!("And so will {:?}!", UnPrintable(39));
+
+  println!("Now {:?} will print!", Deep(Structure(7)));
+
+  let name = "Peter";
+  let age = 255;
+  let pete = Person{name, age};
+
+  println!("{:?}", pete);
+  println!("{:#?}", pete);
+  println!("{:#?} is {:?} years old!", pete.name, pete.age);
+  println!("{} is {:#?} years old!", pete.name, pete.age);
 }
