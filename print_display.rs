@@ -1,4 +1,4 @@
-use std::fmt; // Import `fmt`
+use std::fmt::{self, Formatter, Display}; // Import `fmt`
 
 // A structure holding two numbers. `Debug` will be derived so the results can
 // be contrasted with `Display`.
@@ -54,6 +54,69 @@ impl fmt::Display for Complex {
     }
 }
 
+// Define a structure named `List` containing a `Vec`.
+struct List(Vec<i32>);
+
+impl fmt::Display for List {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    //extract using tuple indexing
+    //and create reference to `vec`
+    let vec = &self.0;
+
+    //open `vec` braket
+    write!(f, "[")?;
+
+    //iterate over `vec` while enumerating the iteration
+    //`count`
+    for (count, v) in vec.iter().enumerate() {
+      //add comma-space for each element except 0
+      if count != 0 {
+        write!(f, ", ")?;
+      }
+      write!(f, "{1}: {0}", v, count)?;
+
+    }
+
+    //close `vec` braket
+    write!(f, "]")
+  }
+}
+
+struct City {
+    name: &'static str,
+    lat: f32,
+    lon: f32
+}
+
+impl Display for City {
+  fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+      let latc = if self.lat >= 0.0 {'N'} else {'S'};
+      let lonc = if self.lat >= 0.0 {'E'} else {'W'};
+
+      write!(f, "{}: {:.3}deg{} {:.3}deg{}",
+             self.name, self.lat.abs(), latc, self.lon.abs(), lonc)
+  }
+}
+
+//#[derive(Debug)]
+struct Color {
+  red: u8,
+  green: u8,
+  blue: u8,
+}
+
+impl Display for Color {
+  fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+    //needed to change RGB to u32 for calc (no mix type operations?)
+    //I guess I can use `as type` ...
+    let col = (self.red as u32*65536)+(self.green as u16*256) as u32 +self.blue as u32;
+
+    //tutorial suggests using :0>2 for padding, but needed to needed
+    //to use #08
+    write!(f, "RGB ({}, {}, {}) {:#08X}",self.red, self.green, self.blue, col)
+  }
+}
+
 fn main() {
     let minmax = MinMax(0, 14);
 
@@ -84,4 +147,26 @@ fn main() {
     let cplx = Complex {real: 3.3, imag: 7.2};
     println!("Display: {}",cplx);
     println!("Debug: {:?}",cplx);
+
+    let v = List(vec![1, 2, 3]);
+    println!("{}", v);
+
+    for city in [
+        City { name: "Dublin", lat: 53.347778, lon: -6.259722 },
+        City { name: "Oslo", lat: 59.95, lon: 10.75 },
+        City { name: "Vancouver", lat: 49.25, lon: -123.1 } ] {
+            println!( "{}", city);
+    }
+
+    for color in [
+        Color { red: 128, green: 255, blue: 90 },
+        Color { red: 0, green: 3, blue: 254 },
+        Color { red: 0, green: 0, blue: 0 }
+    ] {
+        // Switch this to use {} once you've added an implementation
+        // for fmt::Display.
+        //println!("{:?}", color);
+        println!("{}", color);
+    }
+
 }
